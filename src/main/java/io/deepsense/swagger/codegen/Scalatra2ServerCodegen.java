@@ -1,7 +1,7 @@
-package io.swagger.codegen.languages;
+package io.deepsense.swagger.codegen;
 
 import io.swagger.codegen.*;
-import io.swagger.codegen.languages.scalatra2.ScalaEnumImportsFixer;
+import io.deepsense.swagger.codegen.languages.scalatra2.ScalaEnumImportsFixer;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;

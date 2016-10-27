@@ -1,12 +1,12 @@
-package io.swagger.codegen;
+package io.deepsense.swagger.codegen;
 
+import io.swagger.codegen.ClientOptInput;
+import io.swagger.codegen.DefaultGenerator;
 import io.swagger.codegen.config.CodegenConfigurator;
-import io.swagger.codegen.languages.Scalatra2ServerCodegen;
 
-public class Scalatra2Codegen {
+public class Scalatra2CodegenRunner {
 
     /**
-     *
      * @param args should have 3 values: <br>
         args[0] - inputSpecPath - swagger.json schema file path <br>
         args[1] - outputDir - path where code will be generated to<br>
