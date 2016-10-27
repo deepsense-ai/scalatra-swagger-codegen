@@ -1,0 +1,116 @@
+package {{package}}
+
+///////////////////////////////////////////////////////////////
+// THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
+///////////////////////////////////////////////////////////////
+
+{{#imports}}import {{import}}
+{{/imports}}
+
+import scala.util._
+import org.slf4j.{Logger, LoggerFactory}
+
+import java.io.File
+
+import org.json4s.ext.JavaTypesSerializers
+import org.scalatra.{ TypedParamSupport, ScalatraServlet }
+import org.scalatra.swagger._
+import org.json4s._
+import org.json4s.JsonDSL._
+import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
+import org.scalatra.servlet.{FileUploadSupport, MultipartConfig, SizeConstraintExceededException}
+import java.lang.reflect.InvocationTargetException
+
+import scala.collection.JavaConverters._
+
+abstract class {{classname}} extends ScalatraServlet
+    with FileUploadSupport
+    with JacksonJsonSupport {
+
+  import TypeConverters._
+
+  private val logger = LoggerFactory.getLogger(getClass)
+
+  protected val messageJsonFormat = new DefaultFormats {
+    override def dateFormatter = DefaultFormats.losslessDate()
+  }
+
+  protected implicit val jsonFormats: Formats =
+    messageJsonFormat ++ EnumsJsonFormats.modelEnumFormats ++ JavaTypesSerializers.all
+
+  protected val applicationDescription: String = "{{classname}}"
+
+  before() {
+    contentType = formats("json")
+    response.headers += ("Access-Control-Allow-Origin" -> "*")
+  } {{#operations}}{{#operation}}
+
+  {{httpMethod}}("{{path}}") {
+  {{#allParams}}
+    {{#isQueryParam}}
+        {{#isCollectionFormatMulti}}
+    val {{paramName}} = multiParams.getAs[{{baseType}}]("{{paramName}}").getOrElse(Seq.empty).toList
+        {{/isCollectionFormatMulti}}
+        {{^isCollectionFormatMulti}}
+    val {{paramName}} = params.getAs[{{dataType}}]("{{paramName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{paramName}}")){{/required}}
+        {{/isCollectionFormatMulti}}
+    {{/isQueryParam}}
+    {{#isPathParam}}
+    val {{paramName}} = params.getAs[{{dataType}}]("{{baseName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{paramName}}")){{/required}}
+    {{/isPathParam}}
+    {{#isBodyParam}}val {{paramName}} = Try(parsedBody.extract[{{dataType}}]) match {
+        case Success(result) => result
+        case Failure(ex) =>  ex match {
+            case MappingException(_, ex: InvocationTargetException)
+                if ex.getTargetException.isInstanceOf[IllegalArgumentException] =>
+                    invalidBody("{{paramName}}", "{{dataType}}", ex.getTargetException)
+            case _ => invalidBody("{{paramName}}", "{{dataType}}", ex)
+        }
+    }{{/isBodyParam}}
+  {{/allParams}}
+    handleErrors {
+      {{nickname}}Impl({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+    }
+  }
+
+  def {{nickname}}Impl(
+    {{#allParams}}
+        {{#isCollectionFormatMulti}}
+            {{paramName}}: {{dataType}}{{#defaultValue}} /* = {{{defaultValue}}} */{{/defaultValue}}{{#hasMore}},
+            {{/hasMore}}
+        {{/isCollectionFormatMulti}}
+        {{^isCollectionFormatMulti}}{{paramName}}: {{^required}}Option[{{/required}}{{dataType}}{{^required}}]{{/required}}{{#defaultValue}} /* = {{{defaultValue}}} */{{/defaultValue}}{{#hasMore}},
+        {{/hasMore}}
+        {{/isCollectionFormatMulti}}
+        {{/allParams}}
+  ){{#returnType}}: {{returnType}}{{/returnType}} {{/operation}}{{/operations}}
+
+
+  private def invalidOrMissingValue(parameterName: String): Nothing = {
+    val code = 400
+    halt(code, formatErrorBody(code, s"Parameter '$parameterName' missing or invalid"))
+  }
+
+  private def invalidBody(name: String, dataType: String, details: Throwable): Nothing = {
+      val code = 400
+      halt(code, formatErrorBody(code, s"Cannot parse body to '$dataType'. Details: ${details.getMessage}"))
+  }
+
+  // Codegen abstracts from application-specific error body format
+  protected def formatErrorBody(code: Int, msg: String): String
+
+  private def handleErrors[T](code: => T) = {
+    Try(code) match {
+      case Success(value) => value
+      case Failure(ex) => ex match {
+        case ex: ApiException =>
+          logger.warn("Api exception", ex)
+          halt(ex.errorCode, ex.body)
+        case unexpected: Throwable =>
+          logger.error("Internal Server Error", unexpected)
+          halt(500, "Internal Server Error")
+      }
+    }
+  }
+
+}

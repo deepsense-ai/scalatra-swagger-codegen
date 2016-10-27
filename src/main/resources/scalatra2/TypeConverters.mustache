@@ -1,0 +1,23 @@
+package {{apiPackage}}
+
+///////////////////////////////////////////////////////////////
+// THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
+///////////////////////////////////////////////////////////////
+
+import java.util.UUID
+
+import scala.util.{Failure, Success, Try}
+
+import org.scalatra.util.conversion.TypeConverter
+
+object TypeConverters {
+
+  implicit val uuidConverter = new TypeConverter[String, UUID] {
+    override def apply(s: String): Option[UUID] = Try {
+      UUID.fromString(s)
+    } match {
+      case Success(uuid) => Some(uuid)
+      case Failure(ex) => None
+    }
+  }
+}
