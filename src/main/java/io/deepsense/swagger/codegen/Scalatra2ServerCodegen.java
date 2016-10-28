@@ -15,7 +15,7 @@ public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenCon
     protected String groupId = "io.swagger";
     protected String artifactId = "swagger-server";
     protected String artifactVersion = "1.0.0";
-    protected String sourceFolder = "src/main/scala";
+    protected String sourceFolder = "";
 
     public Scalatra2ServerCodegen() {
         super();
