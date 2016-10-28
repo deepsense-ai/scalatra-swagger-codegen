@@ -1,11 +1,13 @@
 organization := "io.deepsense"
 name := "scalatra-swagger-codegen"
 
-version := "1.1"
+version := "1.3"
 
 scalaVersion := "2.10.6"
 
 sbtPlugin := true
+
+isSnapshot := false
 
 val swaggerParserVersion = "1.0.18"
 val swaggerCoreVersion = "1.5.8"
