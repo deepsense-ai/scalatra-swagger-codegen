@@ -1,7 +1,7 @@
 organization := "io.deepsense"
 name := "scalatra-swagger-codegen"
 
-version := "1.3"
+version := "1.4"
 
 scalaVersion := "2.10.6"
 

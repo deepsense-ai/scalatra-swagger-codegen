@@ -20,6 +20,7 @@ import org.json4s.JsonDSL._
 import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
 import org.scalatra.servlet.{FileUploadSupport, MultipartConfig, SizeConstraintExceededException}
 import java.lang.reflect.InvocationTargetException
+import javax.servlet.http.HttpServletRequest
 
 import scala.collection.JavaConverters._
 
@@ -43,9 +44,10 @@ abstract class {{classname}} extends ScalatraServlet
   before() {
     contentType = formats("json")
     response.headers += ("Access-Control-Allow-Origin" -> "*")
-  } {{#operations}}{{#operation}}
-
+  }
+  {{#operations}}{{#operation}}
   {{httpMethod}}("{{path}}") {
+  val headerParams = getHeaderParams({{#allParams}}{{#isHeaderParam}}"{{baseName}}" +: {{/isHeaderParam}}{{/allParams}}Nil)
   {{#allParams}}
     {{#isQueryParam}}
         {{#isCollectionFormatMulti}}
@@ -67,6 +69,7 @@ abstract class {{classname}} extends ScalatraServlet
             case _ => invalidBody("{{paramName}}", "{{dataType}}", ex)
         }
     }{{/isBodyParam}}
+    {{#isHeaderParam}}val {{paramName}} = headerParams.get("{{baseName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}{{/isHeaderParam}}
   {{/allParams}}
     handleErrors {
       {{nickname}}Impl({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
@@ -83,8 +86,10 @@ abstract class {{classname}} extends ScalatraServlet
         {{/hasMore}}
         {{/isCollectionFormatMulti}}
         {{/allParams}}
-  ){{#returnType}}: {{returnType}}{{/returnType}} {{/operation}}{{/operations}}
+  ){{#returnType}}: {{returnType}}{{/returnType}}{{/operation}}{{/operations}}
 
+  private def getHeaderParams(headers: List[String])(implicit request: HttpServletRequest): Map[String, String] =
+    headers.flatMap(key => Option(request.getHeader(key)).map((key, _))).toMap
 
   private def invalidOrMissingValue(parameterName: String): Nothing = {
     val code = 400

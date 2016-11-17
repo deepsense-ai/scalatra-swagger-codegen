@@ -186,6 +186,7 @@ public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenCon
     public String getSwaggerType(Property p) {
         String swaggerType = super.getSwaggerType(p);
         String type;
+
         if (typeMapping.containsKey(swaggerType)) {
             type = typeMapping.get(swaggerType);
             if (languageSpecificPrimitives.contains(type)) {

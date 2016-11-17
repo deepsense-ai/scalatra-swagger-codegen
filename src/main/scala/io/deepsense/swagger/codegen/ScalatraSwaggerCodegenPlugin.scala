@@ -29,7 +29,6 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
         outputDir.getAbsolutePath + "/swagger-generated",
         generatedCodePackage.value
       )
-
       files.asScala.toSeq
     }.taskValue,
     runCodegenWithArgs := {
