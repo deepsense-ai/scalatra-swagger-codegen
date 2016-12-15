@@ -69,7 +69,11 @@ abstract class {{classname}} extends ScalatraServlet
             case _ => invalidBody("{{paramName}}", "{{dataType}}", ex)
         }
     }{{/isBodyParam}}
-    {{#isHeaderParam}}val {{paramName}} = headerParams.get("{{baseName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}{{/isHeaderParam}}
+    {{#isHeaderParam}}
+        val {{paramName}}String = headerParams.get("{{baseName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}
+        val {{paramName}}Converter = implicitly[org.scalatra.util.conversion.TypeConverter[String, {{dataType}}]]
+        val {{paramName}} = {{paramName}}Converter({{paramName}}String).getOrElse(invalidOrMissingValue("{{paramName}}"))
+    {{/isHeaderParam}}
   {{/allParams}}
     handleErrors {
       {{nickname}}Impl({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
