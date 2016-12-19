@@ -1,5 +1,5 @@
 object {{classname}} extends Enumeration {
     type {{classname}} = Value
-{{#allowableValues}}    val {{.}} = Value("{{.}}")
-{{/allowableValues}}
+{{#allowableValues}}{{#values}}
+    val {{.}} = Value("{{.}}"){{/values}}{{/allowableValues}}
 }

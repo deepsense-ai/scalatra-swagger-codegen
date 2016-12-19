@@ -15,7 +15,6 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
   object autoImport {
     lazy val swaggerSpecPath = settingKey[String]("Path to the swagger schema file")
     lazy val generatedCodePackage = settingKey[String]("Package of the generated scala code")
-    lazy val runCodegenWithArgs = inputKey[Unit]("Run codegen with specified swagger spec file, output dir and java package as task arguments")
   }
 
   import autoImport._
@@ -30,11 +29,7 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
         generatedCodePackage.value
       )
       files.asScala.toSeq
-    }.taskValue,
-    runCodegenWithArgs := {
-      val args = spaceDelimited("<arg>").parsed
-      Scalatra2CodegenRunner.main(args.toArray)
-    }
+    }.taskValue
   )
 
 }
