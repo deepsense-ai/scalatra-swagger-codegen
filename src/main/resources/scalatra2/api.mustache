@@ -68,9 +68,9 @@ abstract class {{classname}} extends ScalatraServlet
         }
     }{{/isBodyParam}}
     {{#isHeaderParam}}
-        val {{paramName}}String = headerParams.get("{{baseName}}"){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}
+        val {{paramName}}Opt = headerParams.get("{{baseName}}")
         val {{paramName}}Converter = implicitly[org.scalatra.util.conversion.TypeConverter[String, {{dataType}}]]
-        val {{paramName}} = {{paramName}}Converter({{paramName}}String).getOrElse(invalidOrMissingValue("{{paramName}}"))
+        val {{paramName}} = {{paramName}}Opt.flatMap({{paramName}}Converter.apply){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}
     {{/isHeaderParam}}
   {{/allParams}}
     handleErrors {
