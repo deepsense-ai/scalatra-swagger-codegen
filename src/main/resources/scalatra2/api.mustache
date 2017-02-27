@@ -42,7 +42,6 @@ abstract class {{classname}} extends ScalatraServlet
 
   before() {
     contentType = formats("json")
-    response.headers += ("Access-Control-Allow-Origin" -> "*")
   }
   {{#operations}}{{#operation}}
   {{httpMethod}}("{{path}}") {
