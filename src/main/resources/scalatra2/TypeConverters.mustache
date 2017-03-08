@@ -4,10 +4,11 @@ package {{apiPackage}}
 // THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
 ///////////////////////////////////////////////////////////////
 
-import java.util.UUID
+import java.util.{Date, UUID}
 
 import scala.util.{Failure, Success, Try}
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.scalatra.util.conversion.TypeConverter
 
 object TypeConverters {
@@ -17,6 +18,15 @@ object TypeConverters {
       UUID.fromString(s)
     } match {
       case Success(uuid) => Some(uuid)
+      case Failure(ex) => None
+    }
+  }
+
+  implicit val dateConverter = new TypeConverter[String, Date] {
+    override def apply(s: String): Option[Date] = Try {
+      new ISO8601DateFormat().parse(s)
+    } match {
+      case Success(date) => Some(date)
       case Failure(ex) => None
     }
   }
