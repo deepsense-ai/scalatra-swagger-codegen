@@ -2,10 +2,10 @@ package io.deepsense.swagger.codegen
 
 import scala.collection.JavaConverters._
 
+import sbt._
 import sbt.Keys._
-import sbt.complete.DefaultParsers._
 import sbt.plugins.JvmPlugin
-import sbt.{AutoPlugin, Compile, Def, inputKey, settingKey}
+import sbt.{AutoPlugin, Compile, Def, File, FileFunction, FilesInfo, settingKey}
 
 object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
 
@@ -23,12 +23,18 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
     sourceGenerators in Compile += Def.task {
       val outputDir = (sourceManaged in Compile).value
 
-      val files = Scalatra2CodegenRunner.generate(
-        swaggerSpecPath.value,
-        outputDir.getAbsolutePath + "/swagger-generated",
-        generatedCodePackage.value
-      )
-      files.asScala.toSeq
+      val cachedFun = FileFunction.cached(
+        streams.value.cacheDirectory / "swagger-generated-cache",
+        inStyle = FilesInfo.hash,
+        outStyle = FilesInfo.hash) { (_: Set[File]) =>
+          val files = Scalatra2CodegenRunner.generate(
+            swaggerSpecPath.value,
+            outputDir.getAbsolutePath + "/swagger-generated",
+            generatedCodePackage.value)
+          files.asScala.toSet
+        }
+      cachedFun(Set(file(swaggerSpecPath.value))).toSeq
+      // Regenerate only if swagger spec file changed
     }.taskValue
   )
 
