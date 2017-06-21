@@ -1,0 +1,26 @@
+package {{apiPackage}}
+
+///////////////////////////////////////////////////////////////
+// THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
+///////////////////////////////////////////////////////////////
+
+{{#models}}{{#model}}{{#vars}}{{#isEnum}}import {{modelPackage}}.{{classname}}
+{{/isEnum}}{{/vars}}{{/model}}{{/models}}
+{{#models}}{{#model}}{{#isEnum}}import {{modelPackage}}.{{classname}}
+{{/isEnum}}{{/model}}{{/models}}
+
+import org.json4s.ext.EnumNameSerializer
+
+object EnumsJsonFormats {
+
+  def modelEnumFormats: Seq[EnumNameSerializer[_]] = modelParamsEnumFormats ++ rootEnumObjectFormats
+
+  private def modelParamsEnumFormats =
+{{#models}}{{#model}}{{#vars}}{{#isEnum}}    new EnumNameSerializer({{classname}}.{{datatypeWithEnum}}) ::
+{{/isEnum}}{{/vars}}{{/model}}{{/models}}    Nil
+
+  private def rootEnumObjectFormats =
+{{#models}}{{#model}}{{#isEnum}}    new EnumNameSerializer({{classname}}) ::
+{{/isEnum}}{{/model}}{{/models}}    Nil
+
+}

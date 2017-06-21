@@ -1,0 +1,39 @@
+
+{{#vars}}{{#isEnum}}
+import {{package}}.{{classname}}.{{datatypeWithEnum}}.{{datatypeWithEnum}}
+{{/isEnum}}{{/vars}}
+import scala.collection.mutable.ListBuffer
+
+case class {{classname}} (
+{{#vars}}
+    {{name}}: {{^required}}Option[{{/required}}{{datatypeWithEnum}}{{^required}}]{{/required}}{{#hasMore}},{{/hasMore}}{{#description}} // {{description}}{{/description}}
+{{/vars}}
+) {
+  def validate() = {
+    val MIN_LENGTH_MESSAGE = "Parameter '%s' has to have at least %d characters, but was '%s'."
+    val errors = ListBuffer[String]()
+
+    {{#vars}}{{#minLength}}
+    if ({{name}}.trim().length < {{minLength}}) {
+      errors += MIN_LENGTH_MESSAGE.format("{{classname}}:{{name}}", {{minLength}}, {{name}}.trim())
+    }
+    {{/minLength}}{{/vars}}
+
+    if (errors.nonEmpty) {
+      throw new IllegalArgumentException(errors.mkString(" "))
+    }
+  }
+
+  validate()
+}
+
+object {{classname}} {
+{{#models}}{{#model}}{{#vars}}{{#isEnum}}
+    object {{datatypeWithEnum}} extends Enumeration {
+    type {{datatypeWithEnum}} = Value
+    {{#allowableValues}}{{#values}}
+        val {{.}} = Value("{{.}}"){{/values}}{{/allowableValues}}
+    }
+
+{{/isEnum}}{{/vars}}{{/model}}{{/models}}
+}

@@ -1,0 +1,21 @@
+package {{package}}
+
+///////////////////////////////////////////////////////////////
+// THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
+///////////////////////////////////////////////////////////////
+
+{{#imports}}import {{import}}
+{{/imports}}
+
+{{#models}}{{#model}}
+
+{{#isEnum}}
+{{>enumModel}}
+{{/isEnum}}
+
+{{^isEnum}}
+{{>objectModel}}
+{{/isEnum}}
+
+
+{{/model}}{{/models}}
