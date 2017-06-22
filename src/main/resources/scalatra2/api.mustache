@@ -19,7 +19,10 @@ import org.json4s.JsonDSL._
 import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
 import org.scalatra.servlet.{FileUploadSupport, MultipartConfig, SizeConstraintExceededException}
 import java.lang.reflect.InvocationTargetException
+import java.text.ParseException
 import javax.servlet.http.HttpServletRequest
+
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 
 import scala.collection.JavaConverters._
 
@@ -32,8 +35,18 @@ abstract class {{classname}} extends ScalatraServlet
   private val logger = LoggerFactory.getLogger(getClass)
 
   protected val messageJsonFormat = new DefaultFormats {
-    override def dateFormatter = DefaultFormats.losslessDate()
+    override val dateFormat = new DateFormat {
+      def parse(s: String): Option[Date] = try {
+        Some(new ISO8601DateFormat().parse(s))
+      } catch {
+        case e: ParseException => None
+      }
+
+      def format(d: Date): String = new ISO8601DateFormat().format(d)
+
+    }
   }
+
 
   protected implicit val jsonFormats: Formats =
     messageJsonFormat ++ EnumsJsonFormats.modelEnumFormats ++ JavaTypesSerializers.all
