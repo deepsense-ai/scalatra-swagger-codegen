@@ -1,7 +1,7 @@
 package io.deepsense.swagger.codegen;
 
-import io.swagger.codegen.*;
 import io.deepsense.swagger.languages.scala.ScalaEnumImportsFixer;
+import io.swagger.codegen.*;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
@@ -10,19 +10,22 @@ import io.swagger.models.properties.Property;
 import java.io.File;
 import java.util.*;
 
-public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenConfig {
-    protected String invokerPackage = "io.swagger.server";
+public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig {
     protected String groupId = "io.swagger";
-    protected String artifactId = "swagger-server";
+    protected String artifactId = "swagger-scala-client";
     protected String artifactVersion = "1.0.0";
     protected String sourceFolder = "";
+    protected String authScheme = "";
+    protected boolean authPreemptive;
+    protected boolean asyncHttpClient;
 
-    public Scalatra2ServerCodegen() {
+    public ScalaClientCodegen() {
         super();
-        outputFolder = "generated-code/scalatra2";
+        this.asyncHttpClient = !this.authScheme.isEmpty();
+        outputFolder = "generated-code/scala";
         modelTemplateFiles.put("model.mustache", ".scala");
         apiTemplateFiles.put("api.mustache", ".scala");
-        embeddedTemplateDir = templateDir = "scalatra2";
+        embeddedTemplateDir = templateDir = "scala";
         apiPackage = "com.wordnik.server.api";
         modelPackage = "com.wordnik.server.model";
 
@@ -63,10 +66,14 @@ public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenCon
         // mapped to String as a workaround
         typeMapping.put("binary", "String");
 
-        additionalProperties.put(CodegenConstants.INVOKER_PACKAGE, invokerPackage);
         additionalProperties.put(CodegenConstants.GROUP_ID, groupId);
         additionalProperties.put(CodegenConstants.ARTIFACT_ID, artifactId);
         additionalProperties.put(CodegenConstants.ARTIFACT_VERSION, artifactVersion);
+        additionalProperties.put("asyncHttpClient", Boolean.valueOf(this.asyncHttpClient));
+        additionalProperties.put("authScheme", this.authScheme);
+        additionalProperties.put("authPreemptive", Boolean.valueOf(this.authPreemptive));
+
+        this.supportingFiles.add(new SupportingFile("apiInvoker.mustache", "io/deepsense/neptune/payments/api", "ApiInvoker.scala"));
 
         languageSpecificPrimitives = new HashSet<String>(
                 Arrays.asList(
@@ -99,6 +106,7 @@ public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenCon
 
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));
         cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));
+        cliOptions.add(new CliOption(CodegenConstants.INVOKER_PACKAGE, CodegenConstants.INVOKER_PACKAGE_DESC));
     }
 
     @Override
@@ -121,12 +129,12 @@ public class Scalatra2ServerCodegen extends DefaultCodegen implements CodegenCon
 
     @Override
     public String getName() {
-        return "scalatra2";
+        return "scala";
     }
 
     @Override
     public String getHelp() {
-        return "Generates yet another Scala server application with Scalatra.";
+        return "Generates yet another Scala client application.";
     }
 
     @Override

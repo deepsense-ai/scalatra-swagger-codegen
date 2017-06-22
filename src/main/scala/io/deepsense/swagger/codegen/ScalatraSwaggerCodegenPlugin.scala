@@ -1,7 +1,8 @@
 package io.deepsense.swagger.codegen
 
-import scala.collection.JavaConverters._
+import io.deepsense.swagger.CodegenRunner
 
+import scala.collection.JavaConverters._
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
@@ -13,8 +14,9 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
   override def requires = JvmPlugin
 
   object autoImport {
-    lazy val swaggerSpecPath = settingKey[String]("Path to the swagger schema file")
-    lazy val generatedCodePackage = settingKey[String]("Package of the generated scala code")
+    lazy val swaggerSpecPath: SettingKey[String] = settingKey[String]("Path to the swagger schema file")
+    lazy val swaggerCodegen: SettingKey[String] = settingKey[String]("Generated language")
+    lazy val generatedCodePackage: SettingKey[String] = settingKey[String]("Package of the generated scala code")
   }
 
   import autoImport._
@@ -27,9 +29,10 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
         streams.value.cacheDirectory / "swagger-generated-cache",
         inStyle = FilesInfo.hash,
         outStyle = FilesInfo.hash) { (_: Set[File]) =>
-          val files = Scalatra2CodegenRunner.generate(
+          val files = CodegenRunner.generate(
             swaggerSpecPath.value,
             outputDir.getAbsolutePath + "/swagger-generated",
+            swaggerCodegen.value,
             generatedCodePackage.value)
           files.asScala.toSet
         }
