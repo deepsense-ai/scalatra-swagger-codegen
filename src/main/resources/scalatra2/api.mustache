@@ -17,7 +17,7 @@ import org.scalatra.{ TypedParamSupport, ScalatraServlet }
 import org.json4s._
 import org.json4s.JsonDSL._
 import org.scalatra.json.{ JValueResult, JacksonJsonSupport }
-import org.scalatra.servlet.{FileUploadSupport, MultipartConfig, SizeConstraintExceededException}
+import org.scalatra.servlet.{FileUploadSupport, FileItem, MultipartConfig, SizeConstraintExceededException}
 import java.lang.reflect.InvocationTargetException
 import java.text.ParseException
 import javax.servlet.http.HttpServletRequest
@@ -85,6 +85,9 @@ abstract class {{classname}} extends ScalatraServlet
         val {{paramName}}Converter = implicitly[org.scalatra.util.conversion.TypeConverter[String, {{dataType}}]]
         val {{paramName}} = {{paramName}}Opt.flatMap({{paramName}}Converter.apply){{#required}}.getOrElse(invalidOrMissingValue("{{baseName}}")){{/required}}
     {{/isHeaderParam}}
+    {{#isFile}}
+        val {{paramName}} = fileParams("{{paramName}}")
+    {{/isFile}}
   {{/allParams}}
     handleErrors {
       {{nickname}}Impl({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
@@ -97,7 +100,7 @@ abstract class {{classname}} extends ScalatraServlet
             {{paramName}}: {{dataType}}{{#defaultValue}} /* = {{{defaultValue}}} */{{/defaultValue}}{{#hasMore}},
             {{/hasMore}}
         {{/isCollectionFormatMulti}}
-        {{^isCollectionFormatMulti}}{{paramName}}: {{^required}}Option[{{/required}}{{dataType}}{{^required}}]{{/required}}{{#defaultValue}} /* = {{{defaultValue}}} */{{/defaultValue}}{{#hasMore}},
+        {{^isCollectionFormatMulti}}{{paramName}}: {{^required}}Option[{{/required}}{{#isFile}}FileItem{{/isFile}}{{^isFile}}{{dataType}}{{/isFile}}{{^required}}]{{/required}}{{#defaultValue}} /* = {{{defaultValue}}} */{{/defaultValue}}{{#hasMore}},
         {{/hasMore}}
         {{/isCollectionFormatMulti}}
         {{/allParams}}
