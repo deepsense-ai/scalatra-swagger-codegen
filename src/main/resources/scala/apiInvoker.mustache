@@ -56,6 +56,7 @@ class ApiInvoker(val mapper: ObjectMapper = ScalaJsonUtil.getJsonMapper,
   def escape(value: Double): String = value.toString
   def escape(value: Float): String = value.toString
   def escape(value: UUID): String = value.toString
+  def escape(value: List[UUID]): String = value.map(_.toString).mkString(",")
 
   def deserialize(json: String, containerType: String, cls: Class[_]) = {
     if (cls == classOf[String]) {
