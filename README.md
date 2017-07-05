@@ -1,0 +1,1 @@
+# scalatra-swagger-codegen
