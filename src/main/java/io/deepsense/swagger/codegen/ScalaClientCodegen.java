@@ -65,6 +65,8 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         //TODO binary should be mapped to byte array
         // mapped to String as a workaround
         typeMapping.put("binary", "String");
+        typeMapping.put("date", "Instant");
+        typeMapping.put("date-time", "Instant");
 
         additionalProperties.put(CodegenConstants.GROUP_ID, groupId);
         additionalProperties.put(CodegenConstants.ARTIFACT_ID, artifactId);
@@ -103,6 +105,7 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         importMapping.put("LocalDateTime", "org.joda.time.LocalDateTime");
         importMapping.put("LocalDate", "org.joda.time.LocalDate");
         importMapping.put("LocalTime", "org.joda.time.LocalTime");
+        importMapping.put("Instant", "java.time.Instant");
 
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));
         cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));
