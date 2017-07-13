@@ -4,10 +4,10 @@ package {{apiPackage}}
 // THIS FILE IS GENERATED. DO NOT EDIT. CHANGES WILL BE LOST //
 ///////////////////////////////////////////////////////////////
 
+import java.time.Instant
 import java.util.{Date, UUID}
 
 import scala.util.{Failure, Success, Try}
-
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.scalatra.util.conversion.TypeConverter
 
@@ -37,6 +37,15 @@ object TypeConverters {
     } match {
       case Success(date) => Some(date)
       case Failure(ex) => None
+    }
+  }
+
+  implicit val instantConverter = new TypeConverter[String, Instant] {
+    override def apply(s: String): Option[Instant] = Try {
+      Instant.parse(s)
+    } match {
+      case Success(instant) => Some(instant)
+      case Failure(_) => None
     }
   }
 }
