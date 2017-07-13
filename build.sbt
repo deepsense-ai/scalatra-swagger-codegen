@@ -1,7 +1,7 @@
 organization := "io.deepsense"
 name := "scalatra-swagger-codegen"
 
-version := "1.18"
+version := "1.19"
 
 scalaVersion := "2.10.6"
 
@@ -22,7 +22,10 @@ publishMavenStyle := false
 credentials += Credentials(Path.userHome / ".artifactory_credentials")
 
 publishTo := {
-  Some(Resolver.url("Deepsense Ivy Releases", url(
-    "http://artifactory.deepsense.codilime.com:8081/artifactory/deepsense-io-ivy"
-  ))(Resolver.defaultIvyPatterns))
+  Some(
+    Resolver.url(
+      "Deepsense Ivy Releases",
+      url(
+        "http://artifactory.deepsense.codilime.com:8081/artifactory/deepsense-io-ivy"
+      ))(Resolver.defaultIvyPatterns))
 }

@@ -53,12 +53,12 @@ class {{classname}}(val defBasePath: String = "{{basePath}}",
     {{/requiredParamCount}}
 
     {{#queryParams}}
-    {{#isCollectionFormatMulti}}
+    {{#collectionFormat}}
     if(String.valueOf({{paramName}}) != "null" && {{paramName}} != None) queryParams += "{{baseName}}" -> {{paramName}}{{^required}}.map(_{{/required}}.mkString(","){{^required}}).get{{/required}}
-    {{/isCollectionFormatMulti}}
-    {{^isCollectionFormatMulti}}
+    {{/collectionFormat}}
+    {{^collectionFormat}}
     if(String.valueOf({{paramName}}) != "null" && {{paramName}} != None) queryParams += "{{baseName}}" -> {{paramName}}{{^required}}.map(_{{/required}}.toString{{^required}}).get{{/required}}
-    {{/isCollectionFormatMulti}}
+    {{/collectionFormat}}
     {{/queryParams}}
 
     {{#headerParams}}headerParams += "{{baseName}}" -> {{paramName}}
