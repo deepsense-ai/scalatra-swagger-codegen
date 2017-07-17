@@ -31,6 +31,15 @@ object TypeConverters {
     }
   }
 
+  implicit val stringListConverter = new TypeConverter[String, List[String]] {
+    override def apply(s: String): Option[List[String]] = Try {
+      s.split(",").toList
+    } match {
+      case Success(values) => Some(values)
+      case Failure(_) => None
+    }
+  }
+
   implicit val dateConverter = new TypeConverter[String, Date] {
     override def apply(s: String): Option[Date] = Try {
       new ISO8601DateFormat().parse(s)
