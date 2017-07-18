@@ -61,7 +61,17 @@ class {{classname}}(val defBasePath: String = "{{basePath}}",
     {{/collectionFormat}}
     {{/queryParams}}
 
-    {{#headerParams}}headerParams += "{{baseName}}" -> {{paramName}}
+    {{#headerParams}}
+    {{#required}}
+    headerParams += "{{baseName}}" -> {{paramName}}
+    {{/required}}
+    {{^required}}
+    {{paramName}} match {
+        case Some({{paramName}}Value) => headerParams += "{{baseName}}" -> {{paramName}}Value
+        case None => ()
+    }
+    {{/required}}
+
     {{/headerParams}}
 
     var postBody: AnyRef = {{#bodyParam}}{{paramName}}{{/bodyParam}}{{^bodyParam}}null{{/bodyParam}}
