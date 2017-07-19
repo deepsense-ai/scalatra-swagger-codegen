@@ -21,6 +21,7 @@ import org.scalatra.servlet.{FileUploadSupport, FileItem, MultipartConfig, SizeC
 import java.lang.reflect.InvocationTargetException
 import java.text.ParseException
 import java.util.Date
+import java.util.TimeZone
 import javax.servlet.http.HttpServletRequest
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
@@ -44,6 +45,8 @@ abstract class {{classname}} extends ScalatraServlet
       }
 
       def format(d: Date): String = new ISO8601DateFormat().format(d)
+
+      def timezone: TimeZone = TimeZone.getTimeZone("UTC")
 
     }
   }
