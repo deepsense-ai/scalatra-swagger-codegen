@@ -71,13 +71,11 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         additionalProperties.put(CodegenConstants.GROUP_ID, groupId);
         additionalProperties.put(CodegenConstants.ARTIFACT_ID, artifactId);
         additionalProperties.put(CodegenConstants.ARTIFACT_VERSION, artifactVersion);
-        additionalProperties.put("asyncHttpClient", Boolean.valueOf(this.asyncHttpClient));
+        additionalProperties.put("asyncHttpClient", this.asyncHttpClient);
         additionalProperties.put("authScheme", this.authScheme);
-        additionalProperties.put("authPreemptive", Boolean.valueOf(this.authPreemptive));
+        additionalProperties.put("authPreemptive", this.authPreemptive);
 
-        this.supportingFiles.add(new SupportingFile("apiInvoker.mustache", "io/deepsense/neptune/payments/api", "ApiInvoker.scala"));
-
-        languageSpecificPrimitives = new HashSet<String>(
+        languageSpecificPrimitives = new HashSet<>(
                 Arrays.asList(
                         "String",
                         "boolean",
@@ -91,7 +89,7 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         instantiationTypes.put("array", "ArrayList");
         instantiationTypes.put("map", "HashMap");
 
-        importMapping = new HashMap<String, String>();
+        importMapping = new HashMap<>();
         importMapping.put("BigDecimal", "java.math.BigDecimal");
         importMapping.put("UUID", "java.util.UUID");
         importMapping.put("File", "java.io.File");
@@ -118,6 +116,7 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         supportingFiles.add(new SupportingFile("EnumJsonFormats.mustache", apiRelativeFileFolder(), "EnumJsonFormats.scala"));
         supportingFiles.add(new SupportingFile("ApiException.mustache", apiRelativeFileFolder(), "ApiException.scala"));
         supportingFiles.add(new SupportingFile("TypeConverters.mustache", apiRelativeFileFolder(), "TypeConverters.scala"));
+        supportingFiles.add(new SupportingFile("apiInvoker.mustache", invokerRelativeFileFolder(), "ApiInvoker.scala"));
     }
 
     @Override
@@ -145,18 +144,38 @@ public class ScalaClientCodegen extends DefaultCodegen implements CodegenConfig 
         return "_" + name;
     }
 
+    private String packageToDir(String packageName) {
+        return packageName.replace('.', File.separatorChar);
+    }
+
     @Override
     public String apiFileFolder() {
         return outputFolder + "/" + apiRelativeFileFolder();
     }
 
     private String apiRelativeFileFolder() {
-        return sourceFolder + "/" + apiPackage().replace('.', File.separatorChar);
+        return sourceFolder + "/" + packageToDir(apiPackage());
     }
 
     @Override
     public String modelFileFolder() {
-        return outputFolder + "/" + sourceFolder + "/" + modelPackage().replace('.', File.separatorChar);
+        return outputFolder + "/" + sourceFolder + "/" + packageToDir(modelPackage());
+    }
+
+    private String invokerRelativeFileFolder() {
+        return sourceFolder + "/" + packageToDir(invokerPackage());
+    }
+
+    private String invokerPackage() {
+        return additionalPropertyOrDefault(CodegenConstants.INVOKER_PACKAGE, apiPackage()+".invoker");
+    }
+
+    private String additionalPropertyOrDefault(String propertyKey, String defaultValue) {
+        Object maybeValue = additionalProperties.get(propertyKey);
+        if(maybeValue == null)
+            return defaultValue;
+        else
+            return maybeValue.toString();
     }
 
     @Override

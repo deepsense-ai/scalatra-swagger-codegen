@@ -30,13 +30,22 @@ public class CodegenRunner {
     }
 
     public static Collection<File> generate(String inputSpecPath, String outputDir, String codegen, String codePackage) {
+        return generate(inputSpecPath, outputDir, codegen, codePackage, codePackage);
+    }
+
+    public static Collection<File> generate(
+            String inputSpecPath,
+            String outputDir,
+            String codegen,
+            String apiBasePackage,
+            String modelBasePackage) {
         CodegenConfigurator configurator = new CodegenConfigurator();
         configurator.setInputSpec(inputSpecPath);
         configurator.setOutputDir(outputDir);
         configurator.setLang(codegen);
-        configurator.setApiPackage(codePackage + ".api");
-        configurator.setInvokerPackage(codePackage + ".api.invoker");
-        configurator.setModelPackage(codePackage + ".model");
+        configurator.setApiPackage(apiBasePackage + ".api");
+        configurator.setInvokerPackage(apiBasePackage + ".api.invoker");
+        configurator.setModelPackage(modelBasePackage + ".model");
 
         final ClientOptInput clientOptInput = configurator.toClientOptInput();
         new DefaultGenerator().opts(clientOptInput).generate();

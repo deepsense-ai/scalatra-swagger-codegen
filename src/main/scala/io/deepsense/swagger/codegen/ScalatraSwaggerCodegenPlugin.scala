@@ -17,11 +17,16 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
     lazy val swaggerSpecPath: SettingKey[String] = settingKey[String]("Path to the swagger schema file")
     lazy val swaggerCodegen: SettingKey[String] = settingKey[String]("Generated language")
     lazy val generatedCodePackage: SettingKey[String] = settingKey[String]("Package of the generated scala code")
+    lazy val generatedApiPackage: SettingKey[String] = settingKey[String](
+      "Package of the generated API code (default value from 'generatedCodePackage')")
   }
 
   import autoImport._
 
   override lazy val projectSettings = Seq(
+
+    generatedApiPackage := generatedCodePackage.value,
+
     sourceGenerators in Compile += Def.task {
       val outputDir = (sourceManaged in Compile).value
 
@@ -33,6 +38,7 @@ object ScalatraSwaggerCodegenPlugin extends AutoPlugin {
             swaggerSpecPath.value,
             outputDir.getAbsolutePath + "/swagger-generated",
             swaggerCodegen.value,
+            generatedApiPackage.value,
             generatedCodePackage.value)
           files.asScala.toSet
         }
