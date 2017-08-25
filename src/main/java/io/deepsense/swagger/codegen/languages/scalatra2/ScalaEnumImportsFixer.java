@@ -1,4 +1,4 @@
-package io.deepsense.swagger.codegen.languages.scalatra2;
+package ai.deepsense.swagger.codegen.languages.scalatra2;
 
 import io.swagger.codegen.CodegenModel;
 

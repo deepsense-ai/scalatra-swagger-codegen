@@ -1,6 +1,6 @@
-package io.deepsense.swagger.codegen
+package ai.deepsense.swagger.codegen
 
-import io.deepsense.swagger.CodegenRunner
+import ai.deepsense.swagger.CodegenRunner
 
 import scala.collection.JavaConverters._
 import sbt._
