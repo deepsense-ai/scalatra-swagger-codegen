@@ -1,4 +1,4 @@
-organization := "io.deepsense"
+organization := "ai.deepsense"
 name := "scalatra-swagger-codegen"
 
 version := "1.7"
@@ -17,12 +17,34 @@ libraryDependencies += "io.swagger" % "swagger-parser" % swaggerParserVersion
 libraryDependencies += "io.swagger" % "swagger-compat-spec-parser" % swaggerParserVersion
 libraryDependencies += "io.swagger" % "swagger-core" % swaggerCoreVersion
 
-publishMavenStyle := false
-
-credentials += Credentials(Path.userHome / ".artifactory_credentials")
-
+publishMavenStyle := true
 publishTo := {
-  Some(Resolver.url("Deepsense Ivy Releases", url(
-    "http://artifactory.deepsense.codilime.com:8081/artifactory/deepsense-io-ivy"
-  ))(Resolver.defaultIvyPatterns))
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
+publishArtifact in Test := false
+pomIncludeRepository := { _ => false }
+pomExtra := (
+  <url>https://github.com/deepsense-ai/scalatra-swagger-codegen</url>
+    <licenses>
+      <license>
+        <name>Apache 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      </license>
+    </licenses>
+    <scm>
+      <url>git@github.com:deepsense-ai/scalatra-swagger-codegen.git</url>
+      <connection>scm:git:git@github.com:deepsense-ai/scalatra-swagger-codegen.git</connection>
+    </scm>
+    <developers>
+      <developer>
+        <name>Deepsense</name>
+        <email>contact@deepsense.ai</email>
+        <url>http://deepsense.ai/</url>
+        <organization>Deepsense.ai</organization>
+        <organizationUrl>http://deepsense.ai/</organizationUrl>
+      </developer>
+    </developers>)

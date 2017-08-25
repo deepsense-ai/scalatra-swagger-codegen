@@ -1,4 +1,4 @@
-package io.deepsense.swagger.codegen;
+package ai.deepsense.swagger.codegen;
 
 import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.DefaultGenerator;
